@@ -1,0 +1,14 @@
+Revision history for Perl extension XML::Filter::GenericChunk.
+
+0.06
+    - optional warnings for XML::Filter::CharacterChunk
+    - more documentation
+
+0.05 
+    - added XML::Filter::CharacterChunk
+    - reduced warnings
+    - extended tests
+0.01
+    initial version :)
+
+

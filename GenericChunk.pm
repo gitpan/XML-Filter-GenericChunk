@@ -10,7 +10,7 @@ use XML::LibXML::SAX::Parser;
 use XML::SAX::Base;
 
 # this is done because of mod_perl!
-$XML::Filter::GenericChunk::VERSION = '0.06';
+$XML::Filter::GenericChunk::VERSION = '0.07';
 @XML::Filter::GenericChunk::ISA = qw( XML::SAX::Base );
 
 sub new {
@@ -21,6 +21,7 @@ sub new {
     $self->{RelaxedNames} ||= 0;
     $self->{NamespaceURI} ||= "";
     $self->{TagByName}    = {};
+    # $self->{DropElement}  = 0;
 
     $self->_prepare_names();
 
@@ -32,27 +33,42 @@ sub start_document {
 
     $self->{WBChunk} = "";
     $self->{CurrentElement} = "";
+    $self->{DropElement} ||= 0;
 
-    return $self->SUPER::start_document(@_);
+    $self->SUPER::start_document(@_);
 }
 
 sub start_element {
     my $self = shift;
     my $element = shift;
     $self->_init_element($element);
-    return $self->SUPER::start_element($element);
+
+    unless ( $self->is_tag() and $self->{DropElement} == 1 ) { 
+        $self->SUPER::start_element($element);
+    }
 }
 
 sub end_element {
     my $self = shift;
     my $element = shift;
+
+    # need to remember if this is the active tag, because after reset this 
+    # information is not available anymore
+    my $istag = $self->is_tag();
+
     $self->_reset_element($element);
-    return $self->SUPER::end_element($element);
+    $self->reset_data();
+
+    unless ( $istag and $self->{DropElement} == 1 ) { 
+        $self->SUPER::end_element($element);
+    }
 }
 
 sub relaxed_names {
     my $self = shift;
-    $self->{RelaxedNames} = shift if scalar @_;
+    if ( scalar @_ && defined $_[0] ) {
+        $self->{RelaxedNames} = shift;
+    }
     return $self->{RelaxedNames};
 }
 

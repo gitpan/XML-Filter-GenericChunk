@@ -20,11 +20,4 @@ make test
 # and (as superuser)
 make install
 
-for more infos or comments feel free to contact me
-
-Christian Glahn
-
-Innsbruck University 
-Austria
-
-christian.glahn@uibk.ac.at
+For bug reports and enhancements please use http://rt.cpan.org
